@@ -50,11 +50,17 @@ window.addEventListener("message", function(event) {
 
 // All page scripts should be loaded now, so now we inject the script
 // into the page
-var s = document.createElement('script');
-s.src = chrome.runtime.getURL("content-script/inject.js");
-console.log("Injecting script element into page");
-s.onload = function () {
-  this.remove();
-  console.log("Removing script element from page");
-};
-(document.head || document.documentElement).appendChild(s);
+var originalLoadFunction = window.onload;
+window.onload = function(event){
+  if (originalLoadFunction) originalLoadFunction(event);
+  
+  //enter here the action you want to do once loaded
+  var s = document.createElement('script');
+  s.src = chrome.runtime.getURL("content-script/inject.js");
+  console.log("Injecting script element into page");
+  s.onload = function () {
+    this.remove();
+    console.log("Removing script element from page");
+  };
+  (document.head || document.documentElement).appendChild(s);
+}
